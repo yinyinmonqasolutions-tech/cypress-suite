@@ -1,0 +1,11 @@
+{
+  "name": "cypress-suite",
+  "version": "1.0.0",
+  "scripts": {
+    "cy:open":   "cypress open",
+    "cy:run":    "cypress run",
+    "cy:chrome": "cypress run --browser chrome",
+    "cy:report": "cypress run --reporter cypress-mochawesome-reporter",
+    "cy:smoke":  "cypress run --env tags=smoke"
+  }
+}

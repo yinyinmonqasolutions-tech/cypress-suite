@@ -1,0 +1,75 @@
+name: Cypress E2E Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    # Run every day at 06:00 UTC (13:00 Bangkok time)
+    - cron: '0 6 * * *'
+
+jobs:
+  cypress-run:
+    name: Cypress Tests (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+      fail-fast: false    # run all browsers even if one fails
+
+    steps:
+      # ── 1. Checkout code ──────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Setup Node.js ──────────────────────────
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # ── 3. Install dependencies ───────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 4. Run Cypress ────────────────────────────
+      - name: Run Cypress tests (${{ matrix.browser }})
+        uses: cypress-io/github-action@v6
+        with:
+          browser: ${{ matrix.browser }}
+          wait-on: 'https://www.saucedemo.com'
+          wait-on-timeout: 60
+        env:
+          # Store secrets in GitHub Settings → Secrets → Actions
+          CYPRESS_username: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
+
+      # ── 5. Upload screenshots on failure ─────────
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots-${{ matrix.browser }}
+          path: cypress/screenshots
+          retention-days: 7
+
+      # ── 6. Upload videos (always) ─────────────────
+      - name: Upload videos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-videos-${{ matrix.browser }}
+          path: cypress/videos
+          retention-days: 7
+
+      # ── 7. Upload HTML report ─────────────────────
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mochawesome-report-${{ matrix.browser }}
+          path: cypress/reports
+          retention-days: 14
