@@ -2,10 +2,17 @@
   "name": "cypress-suite",
   "version": "1.0.0",
   "scripts": {
-    "cy:open":   "cypress open",
-    "cy:run":    "cypress run",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
     "cy:chrome": "cypress run --browser chrome",
     "cy:report": "cypress run --reporter cypress-mochawesome-reporter",
-    "cy:smoke":  "cypress run --env tags=smoke"
+    "cy:smoke": "cypress run --env tags=smoke"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.4.0",
+    "cypress-mochawesome-reporter": "^4.0.2",
+    "mochawesome": "^7.1.4",
+    "mochawesome-merge": "^5.1.1",
+    "mochawesome-report-generator": "^6.3.2"
   }
 }
